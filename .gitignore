@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+# env — never commit real values
+.env
+.env.local
+.env.*.local
+# builds
+dist/
+build/
+.next/
+# logs
+*.log
+npm-debug.log*
+# editor / os
+.DS_Store
+.vscode/
+.idea/
+# test output
+coverage/
