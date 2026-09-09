@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo.jsx';
 import PillButton from '../ui/PillButton.jsx';
 import Avatar from '../ui/Avatar.jsx';
+import NotificationDropdown from './NotificationDropdown.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const NAV_LINKS = [
@@ -43,18 +44,16 @@ export default function Navbar() {
 
             <div className="flex items-center gap-3 sm:gap-5">
               {user ? (
-                <Link to={`/u/${user.id}`}>
-                  <Avatar name={user.username} size="sm" />
-                </Link>
-              ) : (
                 <>
-                  <Link to="/login" className="text-sm text-neutral-700 hover:text-neutral-900">
-                    Log in
+                  <NotificationDropdown />
+                  <Link to={`/u/${user.id}`}>
+                    <Avatar name={user.full_name} size="sm" />
                   </Link>
-                  <PillButton as={Link} to="/signup" variant="dark">
-                    Sign up
-                  </PillButton>
                 </>
+              ) : (
+                <PillButton as={Link} to="/signup" variant="dark">
+                  Sign up
+                </PillButton>
               )}
             </div>
 

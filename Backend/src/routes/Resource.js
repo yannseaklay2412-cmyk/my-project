@@ -1,8 +1,10 @@
 import express from 'express';
-import { getResources } from '../controllers/Resource.js';
+import { getResources, createResource } from '../controllers/Resource.js';
+import { verifyToken } from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
 router.get('/', getResources);
+router.post('/', verifyToken, createResource);
 
 export default router;

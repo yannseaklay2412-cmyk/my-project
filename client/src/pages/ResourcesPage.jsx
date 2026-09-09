@@ -8,13 +8,13 @@ import { getResources } from '../services/resources.js';
 function mapResource(row) {
   return {
     id: row.id,
-    title: row.title,
+    title: row.name,
     category: row.category,
     description: row.description,
-    link: row.link,
-    votes: row.votes,
+    link: row.url,
     author: { name: row.owner_name },
-    // No comments table exists yet, so this isn't a real number.
+    // No resource_votes/comments aggregation wired up yet, so these aren't real numbers.
+    votes: 0,
     comments: 0,
   };
 }

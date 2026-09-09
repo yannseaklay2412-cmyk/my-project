@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import TopBar from './TopBar.jsx';
 import Avatar from '../ui/Avatar.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useFavorites } from '../../context/FavoritesContext.jsx';
 
 const SIDEBAR_LINKS = [
   {
@@ -28,6 +29,16 @@ const SIDEBAR_LINKS = [
     ),
   },
   {
+    key: 'favorites',
+    to: () => '/favorites',
+    label: 'Favorites',
+    icon: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+      </svg>
+    ),
+  },
+  {
     key: 'publications',
     to: () => '/publications',
     label: 'Publications',
@@ -42,8 +53,9 @@ const SIDEBAR_LINKS = [
 
 export default function DashboardLayout({ active, children }) {
   const { user, logout } = useAuth();
+  const { count } = useFavorites();
   const navigate = useNavigate();
-  const name = user?.username || 'Guest';
+  const name = user?.full_name || 'Guest';
 
   const handleLogout = () => {
     logout();
@@ -67,18 +79,28 @@ export default function DashboardLayout({ active, children }) {
           <nav className="mt-6 flex flex-col gap-1 text-sm font-medium">
             {SIDEBAR_LINKS.map((link) => {
               const isActive = active === link.key;
+              const badgeCount = link.key === 'favorites' ? count : 0;
               return (
                 <Link
                   key={link.key}
                   to={link.to(user?.id)}
-                  className={`flex items-center gap-2 rounded-lg px-3 py-2 ${
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-colors ${
                     isActive
                       ? 'bg-lime-400 font-semibold text-neutral-900'
                       : 'text-neutral-600 hover:bg-neutral-100'
                   }`}
                 >
                   {link.icon}
-                  {link.label}
+                  <span>{link.label}</span>
+                  {badgeCount > 0 && (
+                    <span
+                      className={`ml-auto rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-200 text-neutral-700'
+                      }`}
+                    >
+                      {badgeCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}

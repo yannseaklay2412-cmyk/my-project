@@ -186,7 +186,7 @@ function SignupForm() {
 
     try {
       await signup({
-        username: form.username,
+        full_name: form.username,
         email: form.universityEmail,
         password: form.password,
       });

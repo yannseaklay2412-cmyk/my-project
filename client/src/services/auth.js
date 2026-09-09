@@ -64,3 +64,14 @@ export async function signup(data) {
 
   return result;
 }
+
+export async function getUserById(id) {
+  const response = await fetch(`${API_BASE_URL}/users/${id}`);
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'User not found');
+  }
+
+  return result.user;
+}

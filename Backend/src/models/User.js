@@ -9,7 +9,7 @@ export const createAcc = async (full_name, email, hashedPassword) => {
 };
 
 export const getAllUsers = async () => {
-  const query = 'SELECT id, username, email, created_at FROM users';
+  const query = 'SELECT id, full_name, email, created_at FROM users';
   const result = await pool.query(query);
   return result.rows;
 };
@@ -34,7 +34,7 @@ export const updateUserProfile = async (id, { bio, university, year, major, gith
     UPDATE users
     SET bio = $1, university = $2, year = $3, major = $4, github_url = $5, skills = $6
     WHERE id = $7
-    RETURNING id, username, email, bio, university, year, major, github_url, skills, created_at
+    RETURNING id, full_name, email, bio, university, year, major, github_url, skills, created_at
   `;
   const values = [bio, university, year, major, github_url, skills, id];
   const result = await pool.query(query, values);

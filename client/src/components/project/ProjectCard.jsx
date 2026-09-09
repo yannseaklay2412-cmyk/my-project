@@ -1,28 +1,68 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Avatar from '../ui/Avatar.jsx';
 import StatusBadge from '../ui/StatusBadge.jsx';
 import TagChip from '../ui/TagChip.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useFavorites } from '../../context/FavoritesContext.jsx';
 
 export default function ProjectCard({ project }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const { id, title, description, status, tags, author, collaborators, comments } = project;
+  const isSaved = Boolean(user && isFavorite(id));
+
+  const handleSaveClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    toggleFavorite(project);
+  };
+
+  const isOwner = Boolean(
+    user && (
+      (author?.id && String(user.id) === String(author.id)) ||
+      (project.owner_id && String(user.id) === String(project.owner_id))
+    )
+  );
+
+  const targetUrl = isOwner ? `/projects/${id}/overview` : `/projects/${id}`;
 
   return (
     <Link
-      to={`/projects/${id}`}
+      to={targetUrl}
       className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 transition-colors hover:border-neutral-300"
     >
       <div className="flex items-center justify-between">
-        <StatusBadge status={status} />
+        <div className="flex items-center gap-2">
+          <StatusBadge status={status} />
+          {isOwner && (
+            <span className="rounded-full bg-lime-100 px-2 py-0.5 text-[10px] font-bold text-lime-800">
+              Your project
+            </span>
+          )}
+        </div>
         <button
           type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          aria-label="Bookmark project"
-          className="text-neutral-300 hover:text-neutral-500"
+          onClick={handleSaveClick}
+          aria-label={!user ? 'Sign in to save' : isSaved ? 'Remove from favorites' : 'Save to favorites'}
+          title={!user ? 'Sign in to save' : isSaved ? 'Remove from favorites' : 'Save to favorites'}
+          className={`rounded-full p-1 transition-all ${
+            isSaved
+              ? 'text-amber-500 hover:text-amber-600 hover:scale-110'
+              : 'text-neutral-300 hover:text-neutral-600 hover:scale-110'
+          }`}
         >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill={isSaved ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
           </svg>
         </button>
@@ -40,7 +80,16 @@ export default function ProjectCard({ project }) {
       </div>
 
       <div className="mt-1 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div
+          onClick={(e) => {
+            if (author?.id) {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate(`/u/${author.id}`);
+            }
+          }}
+          className={`flex items-center gap-2 ${author?.id ? 'hover:opacity-80 cursor-pointer' : ''}`}
+        >
           <Avatar name={author.name} size="sm" />
           <div className="leading-tight">
             <p className="text-sm font-medium text-neutral-900">{author.name}</p>
