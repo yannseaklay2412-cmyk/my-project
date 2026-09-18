@@ -155,7 +155,7 @@ export async function respondToRequest(req, res) {
         message: isAccepted
           ? `Congratulations! Your request to join "${project.title}" has been accepted! You are now a member of the project.`
           : `Your collaboration request to join "${project.title}" was declined.`,
-        link: `/projects/${projectId}`,
+        link: `/projects/${projectId}/overview`,
       });
       sendNotificationToUser(request.requester_id, {
         ...notification,

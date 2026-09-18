@@ -142,8 +142,17 @@ export default function ProjectDetailPage() {
       }
     : MOCK_PROJECT;
 
+  const currentMember = displayMembers.find((m) => String(m.user_id) === String(user?.id));
   const isOwner = Boolean(user && PROJECT.owner?.id && String(user.id) === String(PROJECT.owner.id));
-  const isMember = Boolean(user && (isProjectMember(user) || displayMembers.some((m) => String(m.user_id) === String(user.id))));
+  const isMember = Boolean(
+    isOwner ||
+    (user && (
+      Boolean(currentMember) ||
+      isProjectMember(user) ||
+      myRequest?.status === 'accepted'
+    ))
+  );
+  const memberRole = currentMember?.role || myRequest?.preferred_role || 'Member';
 
   useEffect(() => {
     if (!token || !PROJECT.id) return;
@@ -276,8 +285,8 @@ export default function ProjectDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 pb-16">
-      {isOwner ? (
+    <div className="min-h-screen bg-neutral-50 pb-24 sm:pb-16">
+      {(isOwner || isMember) ? (
         <ProjectWorkspaceHeader
           projectId={PROJECT.id}
           projectName={PROJECT.title}
@@ -287,8 +296,8 @@ export default function ProjectDetailPage() {
         <TopBar />
       )}
 
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-8">
-        {!isOwner && (
+      <main className="mx-auto max-w-5xl px-3.5 py-6 sm:px-8 sm:py-8">
+        {!isOwner && !isMember && (
           <Link
             to="/projects"
             className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900"
@@ -368,20 +377,28 @@ export default function ProjectDetailPage() {
         </div>
 
 
-        <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-neutral-900">{PROJECT.title}</h1>
-            <div className="mt-2 flex items-center gap-2 text-sm text-neutral-500">
+        <div className="mt-3 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 break-words">{PROJECT.title}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-neutral-500">
               <Avatar name={PROJECT.owner.name} size="sm" />
-              {PROJECT.owner.name} · {PROJECT.owner.university} · {PROJECT.updatedAt}
+              <span className="font-medium text-neutral-800">{PROJECT.owner.name}</span>
+              <span>·</span>
+              <span>{PROJECT.owner.university}</span>
+              {PROJECT.updatedAt && (
+                <>
+                  <span>·</span>
+                  <span>{PROJECT.updatedAt}</span>
+                </>
+              )}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={handleToggleFavorite}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all ${
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
                 isSaved
                   ? 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100'
                   : 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50'
@@ -408,7 +425,7 @@ export default function ProjectDetailPage() {
                 {pendingCount > 0 && (
                   <span className="flex h-fit items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 shadow-xs">
                     <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-                    {pendingCount} Request{pendingCount > 1 ? 's' : ''} to review
+                    {pendingCount} Request{pendingCount > 1 ? 's' : ''}
                   </span>
                 )}
                 <Link
@@ -431,27 +448,53 @@ export default function ProjectDetailPage() {
                 </Link>
               </div>
             ) : isMember ? (
-              <Link
-                to={`/projects/${PROJECT.id}/chat`}
-                className="flex h-fit items-center gap-3 rounded-full bg-neutral-900 py-2 pl-5 pr-2 text-sm font-semibold text-white hover:bg-neutral-800"
-              >
-                Go to team chat
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-lime-400 text-neutral-900">
-                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M7 17L17 7M8 7h9v9" />
-                  </svg>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="flex h-fit items-center gap-1.5 rounded-full border border-lime-300 bg-lime-50 px-3 py-2 text-xs font-semibold text-lime-900 shadow-xs">
+                  <span className="h-2 w-2 rounded-full bg-lime-500" />
+                  Team member ({memberRole})
                 </span>
-              </Link>
-            ) : myRequest ? (
+                <Link
+                  to={`/projects/${PROJECT.id}/tasks`}
+                  className="flex h-fit items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold text-white hover:bg-neutral-800 transition-colors"
+                >
+                  <svg className="h-3.5 w-3.5 text-lime-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  Manage Tasks
+                </Link>
+                <Link
+                  to={`/projects/${PROJECT.id}/chat`}
+                  className="flex h-fit items-center gap-2 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-semibold text-neutral-800 hover:bg-neutral-100 transition-colors"
+                >
+                  <svg className="h-3.5 w-3.5 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                  </svg>
+                  Chat
+                </Link>
+              </div>
+            ) : myRequest && myRequest.status === 'pending' ? (
               <span className="flex h-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
                 <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
                 Request Pending ({myRequest.preferred_role || 'Member'})
               </span>
+            ) : myRequest && myRequest.status === 'rejected' ? (
+              <div className="flex items-center gap-2">
+                <span className="flex h-fit items-center gap-2 rounded-full border border-neutral-200 bg-neutral-100 px-4 py-2 text-xs font-semibold text-neutral-600">
+                  Request Declined
+                </span>
+                <button
+                  type="button"
+                  onClick={handleOpenCollabModal}
+                  className="flex h-fit items-center justify-center gap-2 rounded-full bg-neutral-900 py-2 px-4 text-xs font-semibold text-white hover:bg-neutral-800 transition-colors"
+                >
+                  Re-apply
+                </button>
+              </div>
             ) : (
               <button
                 type="button"
                 onClick={handleOpenCollabModal}
-                className="flex h-fit items-center gap-3 rounded-full bg-neutral-900 py-2 pl-5 pr-2 text-sm font-semibold text-white hover:bg-neutral-800 transition-colors"
+                className="flex h-fit items-center justify-center gap-3 rounded-full bg-neutral-900 py-2 pl-5 pr-2 text-sm font-semibold text-white hover:bg-neutral-800 transition-colors w-full sm:w-auto"
               >
                 Request to Collaborate
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-lime-400 text-neutral-900">
@@ -466,7 +509,7 @@ export default function ProjectDetailPage() {
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
-            <div className="rounded-2xl border border-neutral-200 bg-white p-6">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
               <h2 className="font-semibold text-neutral-900">About this project</h2>
               <p className="mt-2 text-sm leading-relaxed text-neutral-600">{PROJECT.description}</p>
 
@@ -483,10 +526,10 @@ export default function ProjectDetailPage() {
 
             {/* Owner Only: Collaboration Requests Section */}
             {isOwner && (
-              <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 pb-4">
+              <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 pb-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-100 text-lime-800">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime-100 text-lime-800">
                       <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
@@ -495,13 +538,13 @@ export default function ProjectDetailPage() {
                       </svg>
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="font-semibold text-neutral-900">Collaboration Requests</h2>
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <h2 className="font-semibold text-neutral-900 text-sm sm:text-base">Collaboration Requests</h2>
                         <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-700">
                           {collabRequests.length}
                         </span>
                         {pendingCount > 0 && (
-                          <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 border border-amber-200">
+                          <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 border border-amber-200">
                             <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
                             {pendingCount} pending
                           </span>
@@ -512,11 +555,11 @@ export default function ProjectDetailPage() {
                   </div>
 
                   {/* Filter Tabs */}
-                  <div className="flex items-center gap-1 rounded-lg bg-neutral-100 p-1 text-xs font-medium text-neutral-600">
+                  <div className="flex items-center gap-1 rounded-lg bg-neutral-100 p-1 text-xs font-medium text-neutral-600 overflow-x-auto max-w-full scrollbar-none">
                     <button
                       type="button"
                       onClick={() => setRequestFilter('all')}
-                      className={`rounded-md px-2.5 py-1 transition-colors ${
+                      className={`shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 transition-colors ${
                         requestFilter === 'all'
                           ? 'bg-white text-neutral-900 shadow-xs font-semibold'
                           : 'hover:text-neutral-900'
@@ -527,7 +570,7 @@ export default function ProjectDetailPage() {
                     <button
                       type="button"
                       onClick={() => setRequestFilter('pending')}
-                      className={`rounded-md px-2.5 py-1 transition-colors ${
+                      className={`shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 transition-colors ${
                         requestFilter === 'pending'
                           ? 'bg-white text-neutral-900 shadow-xs font-semibold'
                           : 'hover:text-neutral-900'
@@ -538,7 +581,7 @@ export default function ProjectDetailPage() {
                     <button
                       type="button"
                       onClick={() => setRequestFilter('accepted')}
-                      className={`rounded-md px-2.5 py-1 transition-colors ${
+                      className={`shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 transition-colors ${
                         requestFilter === 'accepted'
                           ? 'bg-white text-neutral-900 shadow-xs font-semibold'
                           : 'hover:text-neutral-900'
@@ -549,7 +592,7 @@ export default function ProjectDetailPage() {
                     <button
                       type="button"
                       onClick={() => setRequestFilter('rejected')}
-                      className={`rounded-md px-2.5 py-1 transition-colors ${
+                      className={`shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 transition-colors ${
                         requestFilter === 'rejected'
                           ? 'bg-white text-neutral-900 shadow-xs font-semibold'
                           : 'hover:text-neutral-900'
@@ -636,35 +679,17 @@ export default function ProjectDetailPage() {
                           <p className="text-sm text-neutral-700 whitespace-pre-line leading-relaxed">{req.message}</p>
                         </div>
 
-                        {(req.skills?.length > 0 || req.portfolio_url) && (
-                          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-                            {req.skills?.length > 0 && (
-                              <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="text-neutral-400">Skills:</span>
-                                {req.skills.map((skill) => (
-                                  <span
-                                    key={skill}
-                                    className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-neutral-700 border border-neutral-200"
-                                  >
-                                    {skill}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                            {req.portfolio_url && (
-                              <a
-                                href={req.portfolio_url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1 font-medium text-lime-700 hover:text-lime-800 hover:underline"
+                        {req.skills?.length > 0 && (
+                          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+                            <span className="text-neutral-400">Skills:</span>
+                            {req.skills.map((skill) => (
+                              <span
+                                key={skill}
+                                className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-neutral-700 border border-neutral-200"
                               >
-                                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                                </svg>
-                                Portfolio / GitHub ↗
-                              </a>
-                            )}
+                                {skill}
+                              </span>
+                            ))}
                           </div>
                         )}
 
@@ -739,21 +764,21 @@ export default function ProjectDetailPage() {
               </div>
             )}
 
-            <div className="rounded-2xl border border-neutral-200 bg-white p-6">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-6">
               <h2 className="font-semibold text-neutral-900">Discussion ({comments.length})</h2>
 
-              <form onSubmit={handlePostComment} className="mt-4 flex items-center gap-3">
+              <form onSubmit={handlePostComment} className="mt-4 flex items-center gap-2 sm:gap-3">
                 <Avatar name={user?.full_name || 'Guest'} size="sm" />
                 <input
                   type="text"
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder="Add a public comment..."
-                  className="flex-1 rounded-full border border-neutral-200 px-4 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none"
+                  className="flex-1 min-w-0 rounded-full border border-neutral-200 px-3.5 sm:px-4 py-2 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800"
+                  className="rounded-full bg-neutral-900 px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-neutral-800 shrink-0 transition-colors"
                 >
                   Post
                 </button>

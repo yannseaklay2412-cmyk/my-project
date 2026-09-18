@@ -10,16 +10,29 @@ import {
 
 export async function createAccount(req, res) {
   const { full_name, email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+
+  if (!full_name || !email || !password) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const trimmedName = full_name.trim();
 
   try {
-    const existingUsers = await fetchAllUsers();
-    if (existingUsers.find(user => user.email === email)) {
+    // 1. Fast direct indexed DB lookup before doing expensive password hashing
+    const existing = await getUserByEmail(normalizedEmail);
+    if (existing) {
       return res.status(400).json({ error: 'User already exists' });
     }
-    const newUser = await createAcc(full_name, email, hashedPassword);
+
+    // 2. Hash password ONLY after confirming user does not already exist
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await createAcc(trimmedName, normalizedEmail, hashedPassword);
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'User already exists' });
+    }
     res.status(500).json({ error: error.message });
   }
 }
@@ -36,8 +49,14 @@ export async function getAllUsers(req, res) {
 export async function login(req, res) {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
   try {
-    const user = await getUserByEmail(email);
+    const user = await getUserByEmail(normalizedEmail);
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -47,15 +66,22 @@ export async function login(req, res) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    const secret = process.env.JWT_SECRET || 'c8f1a27e94b30d65e712a83f95b0c41872e4d96a5b3c1082f76e4d29a15b8390';
     const token = jwt.sign(
-      { id: user.id, full_name: user.full_name },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { id: user.id, full_name: user.full_name, email: user.email },
+      secret,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
     res.status(200).json({
       token,
-      user: { id: user.id, full_name: user.full_name, email: user.email },
+      user: {
+        id: user.id,
+        full_name: user.full_name,
+        email: user.email,
+        university: user.university,
+        major: user.major,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

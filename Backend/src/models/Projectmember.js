@@ -45,19 +45,43 @@ export const removeProjectMember = async (project_id, user_id) => {
 
 export const getProjectMembers = async (projectId) => {
   const query = `
-    SELECT
-      project_members.id,
-      project_members.project_id,
-      project_members.user_id,
-      project_members.role,
-      project_members.joined_at,
-      users.full_name AS name,
-      users.university,
-      users.major
-    FROM project_members
-    JOIN users ON project_members.user_id = users.id
-    WHERE project_members.project_id = $1
-    ORDER BY project_members.joined_at ASC
+    SELECT DISTINCT ON (user_id)
+      id,
+      project_id,
+      user_id,
+      role,
+      joined_at,
+      name,
+      university,
+      major
+    FROM (
+      SELECT
+        pm.id,
+        pm.project_id,
+        pm.user_id,
+        pm.role,
+        pm.joined_at,
+        u.full_name AS name,
+        u.university,
+        u.major
+      FROM project_members pm
+      JOIN users u ON pm.user_id = u.id
+      WHERE pm.project_id = $1
+      UNION ALL
+      SELECT
+        cr.id,
+        cr.project_id,
+        cr.requester_id AS user_id,
+        COALESCE(cr.preferred_role, 'Member') AS role,
+        cr.created_at AS joined_at,
+        u.full_name AS name,
+        u.university,
+        u.major
+      FROM collaboration_requests cr
+      JOIN users u ON cr.requester_id = u.id
+      WHERE cr.project_id = $1 AND cr.status = 'accepted'
+    ) combined
+    ORDER BY user_id, joined_at ASC
   `;
   const result = await pool.query(query, [projectId]);
   return result.rows;

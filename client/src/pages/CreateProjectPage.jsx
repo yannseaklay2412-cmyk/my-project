@@ -51,11 +51,11 @@ export default function CreateProjectPage() {
 
   return (
     <div className="min-h-screen bg-neutral-100">
-      <header className="border-b border-neutral-200 bg-white px-6 py-4">
+      <header className="border-b border-neutral-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
         <Logo />
       </header>
 
-      <main className="mx-auto max-w-2xl px-4 py-10">
+      <main className="mx-auto max-w-2xl px-4 py-6 sm:py-10 pb-24 sm:pb-10">
         <Link
           to="/projects"
           className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900"
@@ -74,10 +74,10 @@ export default function CreateProjectPage() {
           Back to feed
         </Link>
 
-        <h1 className="mt-4 text-3xl font-bold text-neutral-900">Post a project</h1>
-        <p className="mt-1 text-neutral-500">Share your idea and find collaborators.</p>
+        <h1 className="mt-3 sm:mt-4 text-2xl sm:text-3xl font-bold text-neutral-900">Post a project</h1>
+        <p className="mt-1 text-xs sm:text-sm text-neutral-500">Share your idea and find collaborators.</p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-6 rounded-2xl border border-neutral-200 bg-white p-8">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5 sm:space-y-6 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-8">
           <div>
             <label className={LABEL_CLASS}>Project title</label>
             <input
@@ -166,9 +166,11 @@ export default function CreateProjectPage() {
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <PillButton type="submit" variant="dark">
-            Publish project
-          </PillButton>
+          <div className="pt-2">
+            <PillButton type="submit" variant="dark" className="w-full sm:w-auto justify-between sm:justify-center">
+              Publish project
+            </PillButton>
+          </div>
         </form>
       </main>
     </div>

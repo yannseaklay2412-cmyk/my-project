@@ -1,6 +1,9 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { createMessage } from './models/Message.js';
+import { getProjectById } from './models/Project.js';
+import { getProjectMembers } from './models/Projectmember.js';
+import { getRequestByProjectAndUser } from './models/CollaborationRequest.js';
 
 let ioInstance = null;
 
@@ -20,7 +23,8 @@ export function setupSocket(httpServer) {
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const secret = process.env.JWT_SECRET || 'c8f1a27e94b30d65e712a83f95b0c41872e4d96a5b3c1082f76e4d29a15b8390';
+      const decoded = jwt.verify(token, secret);
       socket.user = decoded;
       next();
     } catch (error) {
@@ -34,12 +38,43 @@ export function setupSocket(httpServer) {
       socket.join(`user_${socket.user.id}`);
     }
 
-    socket.on('join_project', (projectId) => {
-      socket.join(`project_${projectId}`);
+    socket.on('join_project', async (projectId) => {
+      try {
+        const project = await getProjectById(projectId);
+        if (!project) {
+          socket.join(`project_${projectId}`);
+          return;
+        }
+        const isOwner = String(project.owner_id) === String(socket.user.id);
+        const members = await getProjectMembers(projectId);
+        const req = await getRequestByProjectAndUser(projectId, socket.user.id);
+        const isAccepted = req?.status === 'accepted';
+        const isMember = isOwner || isAccepted || members.some((m) => String(m.user_id) === String(socket.user.id));
+        if (isMember) {
+          socket.join(`project_${projectId}`);
+        } else {
+          socket.emit('error_message', 'Only team members can join the project chat');
+        }
+      } catch (err) {
+        socket.join(`project_${projectId}`);
+      }
     });
 
     socket.on('send_message', async ({ projectId, body }) => {
       try {
+        const project = await getProjectById(projectId);
+        if (project) {
+          const isOwner = String(project.owner_id) === String(socket.user.id);
+          const members = await getProjectMembers(projectId);
+          const req = await getRequestByProjectAndUser(projectId, socket.user.id);
+          const isAccepted = req?.status === 'accepted';
+          const isMember = isOwner || isAccepted || members.some((m) => String(m.user_id) === String(socket.user.id));
+          if (!isMember) {
+            socket.emit('error_message', 'Only team members can send messages in this chat');
+            return;
+          }
+        }
+
         const message = await createMessage(projectId, socket.user.id, body);
         io.to(`project_${projectId}`).emit('new_message', {
           ...message,

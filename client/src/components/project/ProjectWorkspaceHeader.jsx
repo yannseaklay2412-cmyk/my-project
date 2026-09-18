@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import Logo from '../layout/Logo.jsx';
 import Avatar from '../ui/Avatar.jsx';
+import NotificationDropdown from '../layout/NotificationDropdown.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { isProjectMember } from '../../mocks/project.js';
 
 const TABS = [
   { key: 'overview', label: 'Overview', path: 'overview' },
@@ -15,20 +15,11 @@ export default function ProjectWorkspaceHeader({ projectId, projectName, active 
   const name = user?.full_name || 'Guest';
 
   return (
-    <div className="border-b border-neutral-200 bg-white">
-      <div className="flex items-center justify-between px-6 py-3">
+    <div className="border-b border-neutral-200 bg-white sticky top-0 z-40">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6">
         <Logo />
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-          </button>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <NotificationDropdown />
           {user && (
             <Link to={`/u/${user.id}`}>
               <Avatar name={name} size="sm" />
@@ -37,8 +28,8 @@ export default function ProjectWorkspaceHeader({ projectId, projectName, active 
         </div>
       </div>
 
-      <div className="flex items-center gap-6 border-t border-neutral-100 bg-neutral-50 px-6 py-3 text-sm">
-        <div className="flex items-center gap-2 mr-2">
+      <div className="flex items-center gap-4 sm:gap-6 border-t border-neutral-100 bg-neutral-50 px-4 py-2.5 sm:px-6 sm:py-3 text-sm overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-1.5 shrink-0">
           <Link
             to="/projects"
             className="flex items-center gap-1 text-xs font-semibold text-neutral-500 hover:text-neutral-900"
@@ -49,21 +40,23 @@ export default function ProjectWorkspaceHeader({ projectId, projectName, active 
             Feed
           </Link>
           <span className="text-neutral-300">/</span>
-          <span className="font-semibold text-neutral-900 max-w-[200px] truncate">{projectName || 'Project Workspace'}</span>
+          <span className="font-semibold text-neutral-900 max-w-[120px] sm:max-w-[240px] truncate">
+            {projectName || 'Workspace'}
+          </span>
         </div>
 
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-4 sm:gap-6 shrink-0 ml-auto sm:ml-0">
           {TABS.map((tab) => {
             const isActive = active === tab.key;
             return (
               <Link
                 key={tab.key}
                 to={`/projects/${projectId}/${tab.path}`}
-                className={
+                className={`text-xs sm:text-sm whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'border-b-2 border-neutral-900 pb-3 -mb-3 font-semibold text-neutral-900'
+                    ? 'border-b-2 border-neutral-900 pb-2.5 -mb-2.5 sm:pb-3 sm:-mb-3 font-semibold text-neutral-900'
                     : 'font-medium text-neutral-500 hover:text-neutral-900'
-                }
+                }`}
               >
                 {tab.label}
               </Link>

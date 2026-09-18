@@ -2,7 +2,11 @@ import pool from '../config/db.js';
 import bcrypt from 'bcrypt';
 
 export const createAcc = async (full_name, email, hashedPassword) => {
-  const query = 'INSERT INTO users (full_name, email, password_hash) VALUES ($1, $2, $3) RETURNING *';
+  const query = `
+    INSERT INTO users (full_name, email, password_hash) 
+    VALUES ($1, $2, $3) 
+    RETURNING id, full_name, email, is_verified, university, year, major, bio, github_url, skills, created_at
+  `;
   const values = [full_name, email, hashedPassword];
   const result = await pool.query(query, values);
   return result.rows[0];

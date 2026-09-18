@@ -48,19 +48,19 @@ export default function ProjectResourcesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50 pb-24 sm:pb-12">
       <ProjectWorkspaceHeader projectId={id} projectName="StudyBuddy" active="resources" />
 
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-8">
-        <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-6">
+      <main className="mx-auto max-w-5xl px-3.5 py-6 sm:px-8 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-lime-600">Team resource hub</p>
-            <h1 className="mt-2 text-2xl font-bold text-neutral-900">Project Links &amp; Reference Assets</h1>
-            <p className="mt-1 max-w-xl text-sm text-neutral-500">
+            <h1 className="mt-2 text-xl sm:text-2xl font-bold text-neutral-900">Project Links &amp; Reference Assets</h1>
+            <p className="mt-1 max-w-xl text-xs sm:text-sm text-neutral-500">
               Centralized access to code repos, Figma prototypes, Google Docs, and lecture slide decks.
             </p>
           </div>
-          <button className="flex h-fit items-center gap-2 rounded-full bg-neutral-900 py-2.5 pl-2 pr-5 text-sm font-semibold text-white hover:bg-neutral-800">
+          <button className="w-full sm:w-auto flex h-fit items-center justify-center gap-2 rounded-full bg-neutral-900 py-2.5 pl-2 pr-5 text-sm font-semibold text-white hover:bg-neutral-800 transition-colors">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-lime-400 text-neutral-900">
               +
             </span>

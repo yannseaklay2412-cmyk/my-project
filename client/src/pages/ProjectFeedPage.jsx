@@ -98,14 +98,14 @@ export default function ProjectFeedPage() {
 
   return (
     <DashboardLayout active="projects">
-      <h1 className="text-3xl font-bold text-neutral-900">Project feed</h1>
-      <p className="mt-1 max-w-2xl text-neutral-500">
+      <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">Project feed</h1>
+      <p className="mt-1 max-w-2xl text-xs sm:text-sm text-neutral-500">
         Discover and collaborate on the latest research and development initiatives within your
         academic network.
       </p>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="relative min-w-55 flex-1">
+      <div className="mt-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
+        <div className="relative w-full sm:min-w-55 sm:flex-1">
           <svg
             className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
             viewBox="0 0 24 24"
@@ -125,30 +125,32 @@ export default function ProjectFeedPage() {
           />
         </div>
 
-        <SelectPill
-          label="Status"
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          options={STATUS_OPTIONS}
-        />
-
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
           <SelectPill
-            label="Sort by"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value || 'Newest')}
-            options={SORT_OPTIONS}
+            label="Status"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            options={STATUS_OPTIONS}
           />
 
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              className="text-xs font-medium text-neutral-500 hover:text-neutral-900 underline transition-colors"
-            >
-              Reset
-            </button>
-          )}
+          <div className="flex items-center gap-2 sm:ml-auto">
+            <SelectPill
+              label="Sort by"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value || 'Newest')}
+              options={SORT_OPTIONS}
+            />
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="text-xs font-medium text-neutral-500 hover:text-neutral-900 underline transition-colors"
+              >
+                Reset
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -183,10 +185,10 @@ export default function ProjectFeedPage() {
 
       <Link
         to="/projects/new"
-        className="fixed bottom-8 right-8 flex items-center gap-2 rounded-full bg-neutral-900 py-3 pl-5 pr-4 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-neutral-800"
+        className="fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-30 flex items-center gap-2 rounded-full bg-neutral-900 py-2.5 px-4 sm:py-3 sm:pl-5 sm:pr-4 text-xs sm:text-sm font-semibold text-white shadow-xl transition-all hover:bg-neutral-800 hover:scale-105 active:scale-95"
       >
         New project
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lime-400 text-neutral-900">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lime-400 text-neutral-900 font-bold">
           +
         </span>
       </Link>

@@ -152,8 +152,8 @@ export default function FavoritesPage() {
     <DashboardLayout active="favorites">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900">Favorites</h1>
-          <p className="mt-1 max-w-2xl text-neutral-500">
+          <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">Favorites</h1>
+          <p className="mt-1 max-w-2xl text-xs sm:text-sm text-neutral-500">
             Keep track of projects you have bookmarked for collaboration, inspiration, or future participation.
           </p>
         </div>
@@ -199,8 +199,8 @@ export default function FavoritesPage() {
         />
       ) : (
         <>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <div className="relative min-w-55 flex-1">
+          <div className="mt-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
+            <div className="relative w-full sm:min-w-55 sm:flex-1">
               <svg
                 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
                 viewBox="0 0 24 24"
@@ -220,50 +220,52 @@ export default function FavoritesPage() {
               />
             </div>
 
-            {tagOptions.length > 0 && (
-              <SelectPill
-                label="Tag"
-                value={selectedTag}
-                onChange={(e) => setSelectedTag(e.target.value)}
-                options={tagOptions}
-              />
-            )}
-
-            {universityOptions.length > 0 && (
-              <SelectPill
-                label="University"
-                value={selectedUniversity}
-                onChange={(e) => setSelectedUniversity(e.target.value)}
-                options={universityOptions}
-              />
-            )}
-
-            {statusOptions.length > 0 && (
-              <SelectPill
-                label="Status"
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                options={statusOptions}
-              />
-            )}
-
-            <div className="flex items-center gap-2 ml-auto">
-              <SelectPill
-                label="Sort by"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value || 'Newest saved')}
-                options={SORT_OPTIONS}
-              />
-
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="text-xs font-medium text-neutral-500 hover:text-neutral-900 underline transition-colors"
-                >
-                  Reset
-                </button>
+            <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
+              {tagOptions.length > 0 && (
+                <SelectPill
+                  label="Tag"
+                  value={selectedTag}
+                  onChange={(e) => setSelectedTag(e.target.value)}
+                  options={tagOptions}
+                />
               )}
+
+              {universityOptions.length > 0 && (
+                <SelectPill
+                  label="University"
+                  value={selectedUniversity}
+                  onChange={(e) => setSelectedUniversity(e.target.value)}
+                  options={universityOptions}
+                />
+              )}
+
+              {statusOptions.length > 0 && (
+                <SelectPill
+                  label="Status"
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  options={statusOptions}
+                />
+              )}
+
+              <div className="flex items-center gap-2 sm:ml-auto">
+                <SelectPill
+                  label="Sort by"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value || 'Newest saved')}
+                  options={SORT_OPTIONS}
+                />
+
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="text-xs font-medium text-neutral-500 hover:text-neutral-900 underline transition-colors"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

@@ -80,6 +80,15 @@ export default function NotificationDropdown() {
             </svg>
           </span>
         );
+      case 'task_assigned':
+        return (
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+            </svg>
+          </span>
+        );
       case 'request_rejected':
         return (
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
@@ -107,20 +116,20 @@ export default function NotificationDropdown() {
       {/* Real-time Toast Banner Popup */}
       {activeToast && (
         <div
-          className="fixed top-5 right-5 z-50 flex max-w-sm cursor-pointer items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-xl transition-all animate-in slide-in-from-top-4 duration-300 hover:border-neutral-300"
+          className="fixed top-4 left-3 right-3 sm:left-auto sm:right-5 sm:max-w-sm z-50 flex cursor-pointer items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-xl transition-all animate-in slide-in-from-top-4 duration-300 hover:border-neutral-300"
           onClick={handleToastClick}
         >
           {getNotificationIcon(activeToast.type)}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-bold text-neutral-900">{activeToast.title}</p>
+              <p className="text-sm font-bold text-neutral-900 truncate">{activeToast.title}</p>
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   dismissToast();
                 }}
-                className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700"
+                className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 shrink-0"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -157,7 +166,7 @@ export default function NotificationDropdown() {
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-neutral-200 bg-white shadow-xl z-50 overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
+          <div className="fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 mt-2 sm:w-96 max-w-sm mx-auto sm:mx-0 rounded-2xl border border-neutral-200 bg-white shadow-2xl z-50 overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3 bg-neutral-50/70">
               <div className="flex items-center gap-2">

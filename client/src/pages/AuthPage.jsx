@@ -46,8 +46,13 @@ export default function AuthPage() {
         </p>
       </aside>
 
-      <main className="flex w-full flex-col items-center justify-center px-4 py-12 sm:px-8 md:w-1/2">
-        <div className="w-full max-w-sm rounded-2xl border border-neutral-200 p-8">
+      <main className="flex w-full flex-col items-center justify-center px-4 py-8 sm:py-12 sm:px-8 md:w-1/2">
+        {/* Mobile Logo Branding (when desktop sidebar is hidden) */}
+        <div className="mb-6 md:hidden">
+          <Logo />
+        </div>
+
+        <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 shadow-xs">
           <div className="mx-auto mb-8 flex w-fit rounded-full bg-neutral-100 p-1">
             <Link
               to="/signup"

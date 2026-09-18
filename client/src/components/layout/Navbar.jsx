@@ -87,6 +87,33 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            {!user ? (
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-lg px-3 py-2 text-neutral-600 hover:bg-neutral-100"
+              >
+                Log in
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/favorites"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg px-3 py-2 text-neutral-600 hover:bg-neutral-100"
+                >
+                  Saved Projects
+                </Link>
+                <Link
+                  to={`/u/${user.id}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg px-3 py-2 text-neutral-600 hover:bg-neutral-100"
+                >
+                  My Profile
+                </Link>
+              </>
+            )}
           </nav>
         )}
       </div>

@@ -75,7 +75,7 @@ export default function CollaborationRequestModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs transition-opacity animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-neutral-900/60 backdrop-blur-xs transition-opacity animate-in fade-in overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget && !submitting) {
           onClose();
@@ -85,14 +85,14 @@ export default function CollaborationRequestModal({
       aria-modal="true"
       aria-labelledby="collab-modal-title"
     >
-      <div className="relative w-full max-w-lg rounded-2xl border border-neutral-200 bg-white p-6 shadow-2xl transition-all sm:p-8">
+      <div className="relative w-full max-w-lg rounded-2xl border border-neutral-200 bg-white p-5 sm:p-8 shadow-2xl transition-all max-h-[90vh] overflow-y-auto my-auto">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
           disabled={submitting}
           aria-label="Close modal"
-          className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
+          className="absolute right-4 top-4 sm:right-5 sm:top-5 flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
         >
           ✕
         </button>
@@ -124,10 +124,10 @@ export default function CollaborationRequestModal({
               <span className="inline-flex items-center gap-1.5 rounded-full bg-lime-50 px-2.5 py-1 text-xs font-semibold text-lime-800">
                 Collaboration Request
               </span>
-              <h2 id="collab-modal-title" className="mt-2 text-2xl font-bold text-neutral-900">
+              <h2 id="collab-modal-title" className="mt-2 text-xl sm:text-2xl font-bold text-neutral-900">
                 Join {project.title}
               </h2>
-              <p className="mt-1 text-sm text-neutral-500">
+              <p className="mt-1 text-xs sm:text-sm text-neutral-500">
                 Tell the project team what role you'd like and what skills you bring to the table.
               </p>
             </div>
@@ -200,19 +200,19 @@ export default function CollaborationRequestModal({
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6 flex items-center justify-end gap-3 pt-2">
+              <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3 pt-2">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={submitting}
-                  className="rounded-full px-5 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 transition-colors"
+                  className="w-full sm:w-auto text-center rounded-full px-5 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-neutral-800 disabled:opacity-50 transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-neutral-800 disabled:opacity-50 transition-colors"
                 >
                   {submitting ? 'Sending...' : 'Send Request'}
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lime-400 text-neutral-900">

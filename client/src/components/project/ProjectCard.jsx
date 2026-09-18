@@ -88,12 +88,12 @@ export default function ProjectCard({ project }) {
               navigate(`/u/${author.id}`);
             }
           }}
-          className={`flex items-center gap-2 ${author?.id ? 'hover:opacity-80 cursor-pointer' : ''}`}
+          className={`flex items-center gap-2 min-w-0 ${author?.id ? 'hover:opacity-80 cursor-pointer' : ''}`}
         >
           <Avatar name={author.name} size="sm" />
-          <div className="leading-tight">
-            <p className="text-sm font-medium text-neutral-900">{author.name}</p>
-            <p className="text-xs text-neutral-400">{author.university}</p>
+          <div className="leading-tight min-w-0 max-w-[130px] sm:max-w-[170px]">
+            <p className="text-sm font-medium text-neutral-900 truncate">{author.name}</p>
+            <p className="text-xs text-neutral-400 truncate">{author.university}</p>
           </div>
         </div>
 

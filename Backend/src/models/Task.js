@@ -9,6 +9,8 @@ export const getTasksByProjectId = async (projectId) => {
       tasks.description,
       tasks.assignee_id,
       tasks.status,
+      tasks.due_date::text AS due_date,
+      tasks.priority,
       tasks.created_at,
       tasks.updated_at,
       users.full_name AS assignee_name,
@@ -27,18 +29,36 @@ export const getTasksByProjectId = async (projectId) => {
     assigneeId: row.assignee_id,
     assignee: row.assignee_name || 'Unassigned',
     status: row.status || 'To Do',
+    dueDate: row.due_date ? String(row.due_date).slice(0, 10) : null,
+    priority: row.priority || 'Medium',
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }));
 };
 
-export const createTask = async (projectId, title, description, assigneeId, status = 'To Do') => {
+export const createTask = async (
+  projectId,
+  title,
+  description,
+  assigneeId,
+  status = 'To Do',
+  dueDate = null,
+  priority = 'Medium'
+) => {
   const query = `
-    INSERT INTO tasks (project_id, title, description, assignee_id, status)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING *
+    INSERT INTO tasks (project_id, title, description, assignee_id, status, due_date, priority)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING *, due_date::text AS due_date_str
   `;
-  const result = await pool.query(query, [projectId, title, description, assigneeId || null, status]);
+  const result = await pool.query(query, [
+    projectId,
+    title,
+    description,
+    assigneeId || null,
+    status,
+    dueDate || null,
+    priority || 'Medium',
+  ]);
   const task = result.rows[0];
 
   let assigneeName = 'Unassigned';
@@ -57,13 +77,15 @@ export const createTask = async (projectId, title, description, assigneeId, stat
     assigneeId: task.assignee_id,
     assignee: assigneeName,
     status: task.status,
+    dueDate: task.due_date_str ? String(task.due_date_str).slice(0, 10) : null,
+    priority: task.priority || 'Medium',
     createdAt: task.created_at,
     updatedAt: task.updated_at,
   };
 };
 
 export const updateTask = async (taskId, updates) => {
-  const { title, description, assigneeId, status } = updates;
+  const { title, description, assigneeId, status, dueDate, priority } = updates;
   const fields = [];
   const values = [];
   let index = 1;
@@ -84,6 +106,14 @@ export const updateTask = async (taskId, updates) => {
     fields.push(`status = $${index++}`);
     values.push(status);
   }
+  if (dueDate !== undefined) {
+    fields.push(`due_date = $${index++}`);
+    values.push(dueDate ? dueDate : null);
+  }
+  if (priority !== undefined) {
+    fields.push(`priority = $${index++}`);
+    values.push(priority || 'Medium');
+  }
   fields.push(`updated_at = NOW()`);
 
   values.push(taskId);
@@ -91,7 +121,7 @@ export const updateTask = async (taskId, updates) => {
     UPDATE tasks
     SET ${fields.join(', ')}
     WHERE id = $${index}
-    RETURNING *
+    RETURNING *, due_date::text AS due_date_str
   `;
   const result = await pool.query(query, values);
   if (result.rows.length === 0) return null;
@@ -113,6 +143,8 @@ export const updateTask = async (taskId, updates) => {
     assigneeId: task.assignee_id,
     assignee: assigneeName,
     status: task.status,
+    dueDate: task.due_date_str ? String(task.due_date_str).slice(0, 10) : null,
+    priority: task.priority || 'Medium',
     createdAt: task.created_at,
     updatedAt: task.updated_at,
   };

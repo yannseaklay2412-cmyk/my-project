@@ -100,12 +100,12 @@ export default function ProfilePage() {
 
       {!loading && !error && displayedUser && (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-6">
-            <div className="flex items-center gap-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 w-full sm:w-auto">
               <Avatar name={name} size="lg" />
-              <div>
-                <h1 className="text-xl font-bold text-neutral-900">{name}</h1>
-                <p className="text-sm text-neutral-500">
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold text-neutral-900 break-words">{name}</h1>
+                <p className="text-xs sm:text-sm text-neutral-500">
                   {education || (isOwnProfile ? 'Add your university, year, and major' : 'CollabHub member')}
                 </p>
                 {displayedUser.github_url && (
@@ -117,7 +117,7 @@ export default function ProfilePage() {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-1 inline-block text-sm font-medium text-lime-600 hover:text-lime-700"
+                    className="mt-1 inline-block text-xs sm:text-sm font-medium text-lime-600 hover:text-lime-700"
                   >
                     {'</>'} GitHub Profile
                   </a>
@@ -135,7 +135,7 @@ export default function ProfilePage() {
             {isOwnProfile && (
               <Link
                 to="/profile/edit"
-                className="h-fit rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800"
+                className="w-full sm:w-auto text-center h-fit rounded-full bg-neutral-900 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-neutral-800 transition-colors"
               >
                 Edit profile
               </Link>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="rounded-2xl border border-neutral-200 bg-white p-6 lg:col-span-2">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 lg:col-span-2">
               <h2 className="font-semibold text-neutral-900">About</h2>
               <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-neutral-600">
                 {displayedUser.bio ||
@@ -153,7 +153,7 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-neutral-200 bg-white p-6">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6">
               <h2 className="font-semibold text-neutral-900">Stats</h2>
               <dl className="mt-3 space-y-3 text-sm">
                 <div className="flex items-center justify-between">

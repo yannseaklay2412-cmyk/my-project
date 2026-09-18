@@ -42,7 +42,7 @@ export default function ProfileEditPage() {
   };
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-10">
+    <div className="mx-auto max-w-xl px-4 py-6 sm:py-10 pb-24 sm:pb-10">
       <Link
         to={`/u/${user?.id}`}
         className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900"
@@ -120,19 +120,19 @@ export default function ProfileEditPage() {
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800"
-          >
-            Save changes
-          </button>
+        <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="rounded-full border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-700 hover:bg-neutral-50"
+            className="w-full sm:w-auto text-center rounded-full border border-neutral-200 px-5 py-2.5 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors"
           >
             Cancel
+          </button>
+          <button
+            type="submit"
+            className="w-full sm:w-auto text-center rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800 transition-colors"
+          >
+            Save changes
           </button>
         </div>
       </form>
